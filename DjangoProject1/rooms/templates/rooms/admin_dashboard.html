@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tableau de bord administrateur - Système de Réservation{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="mb-0">Tableau de bord administrateur</h2>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'admin:rooms_room_add' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Ajouter une salle
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total des salles</h5>
+                    <p class="display-4 mb-0">{{ total_rooms }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Réservations actives</h5>
+                    <p class="display-4 mb-0">{{ active_reservations }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total des réservations</h5>
+                    <p class="display-4 mb-0">{{ total_reservations }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rooms Management -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4 class="mb-0">Gestion des salles</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Capacité</th>
+                            <th>Prix/heure</th>
+                            <th>Disponibilité</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for room in rooms %}
+                        <tr>
+                            <td>{{ room.name }}</td>
+                            <td>{{ room.capacity }} personnes</td>
+                            <td>{{ room.price_per_hour }} €</td>
+                            <td>
+                                {% if room.is_available %}
+                                <span class="badge bg-success">Disponible</span>
+                                {% else %}
+                                <span class="badge bg-danger">Indisponible</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'admin:rooms_room_change' room.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'admin:rooms_room_delete' room.id %}" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Reservations -->
+    <div class="card">
+        <div class="card-header">
+            <h4 class="mb-0">Réservations récentes</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Salle</th>
+                            <th>Utilisateur</th>
+                            <th>Début</th>
+                            <th>Fin</th>
+                            <th>Prix total</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reservation in reservations %}
+                        <tr>
+                            <td>{{ reservation.room.name }}</td>
+                            <td>{{ reservation.user.username }}</td>
+                            <td>{{ reservation.start_time|date:"d/m/Y H:i" }}</td>
+                            <td>{{ reservation.end_time|date:"d/m/Y H:i" }}</td>
+                            <td>{{ reservation.total_price }} €</td>
+                            <td>
+                                <a href="{% url 'admin:rooms_reservation_change' reservation.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'admin:rooms_reservation_delete' reservation.id %}" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

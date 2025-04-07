@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="mb-0">Mes Réservations</h2>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'rooms:room_list' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Nouvelle Réservation
+            </a>
+        </div>
+    </div>
+
+    {% if reservations %}
+    <div class="row">
+        {% for reservation in reservations %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                {% if reservation.room.image %}
+                <img src="{{ reservation.room.image.url }}" class="card-img-top" alt="{{ reservation.room.name }}">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="fas fa-door-open fa-3x text-muted"></i>
+                </div>
+                {% endif %}
+                
+                <div class="card-body">
+                    <h5 class="card-title">{{ reservation.room.name }}</h5>
+                    <p class="card-text text-muted">
+                        <i class="fas fa-users me-2"></i>{{ reservation.room.capacity }} personnes
+                    </p>
+                    
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted">Début:</span>
+                            <span class="fw-bold">{{ reservation.start_time|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Fin:</span>
+                            <span class="fw-bold">{{ reservation.end_time|date:"d/m/Y H:i" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">Durée:</span>
+                        <span class="fw-bold">{{ reservation.duration }} heures</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">Prix total:</span>
+                        <span class="h5 text-primary mb-0">{{ reservation.total_price }} €</span>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'rooms:room_detail' reservation.room.id %}" class="btn btn-outline-primary">
+                            <i class="fas fa-info-circle me-2"></i>Voir la salle
+                        </a>
+                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelModal{{ reservation.id }}">
+                            <i class="fas fa-times me-2"></i>Annuler
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cancel Modal -->
+        <div class="modal fade" id="cancelModal{{ reservation.id }}" tabindex="-1" aria-labelledby="cancelModalLabel{{ reservation.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cancelModalLabel{{ reservation.id }}">Confirmer l'annulation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Êtes-vous sûr de vouloir annuler cette réservation ?</p>
+                        <p class="mb-0"><strong>Salle:</strong> {{ reservation.room.name }}</p>
+                        <p class="mb-0"><strong>Date:</strong> {{ reservation.start_time|date:"d/m/Y" }}</p>
+                        <p><strong>Horaire:</strong> {{ reservation.start_time|date:"H:i" }} - {{ reservation.end_time|date:"H:i" }}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Retour</button>
+                        <form method="post" action="{% url 'rooms:cancel_reservation' reservation.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Confirmer l'annulation</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>Vous n'avez pas encore de réservations.
+        <a href="{% url 'rooms:room_list' %}" class="alert-link">Réserver une salle</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

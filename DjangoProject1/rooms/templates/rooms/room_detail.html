@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load room_extras %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            {% if room.image %}
+            <img src="{{ room.image.url }}" class="card-img-top" alt="{{ room.name }}" style="height: 400px; object-fit: cover;">
+            {% else %}
+            <img src="{% static 'images/default-room.jpg' %}" class="card-img-top" alt="{{ room.name }}" style="height: 400px; object-fit: cover;">
+            {% endif %}
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h1 class="h2 mb-0">{{ room.name }}</h1>
+                    {% if room.is_available %}
+                    <span class="badge badge-available">Disponible</span>
+                    {% else %}
+                    <span class="badge badge-unavailable">Non disponible</span>
+                    {% endif %}
+                </div>
+                <p class="lead text-muted">{{ room.description }}</p>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5 class="mb-3">Informations</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-users me-2"></i>
+                                <strong>Capacité:</strong> {{ room.capacity }} personnes
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-euro-sign me-2"></i>
+                                <strong>Prix:</strong> {{ room.price_per_hour }} €/heure
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="mb-3">Équipements</h5>
+                        <ul class="list-unstyled">
+                            {% for amenity in room.amenities|parse_json %}
+                            <li class="mb-2">
+                                <i class="fas fa-check me-2 text-success"></i>
+                                {{ amenity }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                {% if room.is_available %}
+                <div class="text-center">
+                    <a href="{% url 'rooms:create_reservation' %}?room={{ room.id }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-calendar-plus me-2"></i>Réserver cette salle
+                    </a>
+                </div>
+                {% else %}
+                <div class="alert alert-warning text-center">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Cette salle n'est pas disponible pour le moment.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Horaires d'ouverture</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-clock me-2"></i>
+                        Lundi - Vendredi: 8h00 - 20h00
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-clock me-2"></i>
+                        Samedi: 9h00 - 18h00
+                    </li>
+                    <li>
+                        <i class="fas fa-clock me-2"></i>
+                        Dimanche: Fermé
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Contact</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-phone me-2"></i>
+                        +33 1 23 45 67 89
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-envelope me-2"></i>
+                        contact@example.com
+                    </li>
+                    <li>
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        123 Rue Example, 75000 Paris
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
