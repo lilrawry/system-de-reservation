@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Salles Disponibles</h1>
+    <div class="row">
+        {% for room in rooms %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                {% if room.image %}
+                <img src="{{ room.image.url }}" class="card-img-top" alt="{{ room.name }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ room.name }}</h5>
+                    <p class="card-text">{{ room.description }}</p>
+                    <p class="card-text">
+                        <strong>Capacité:</strong> {{ room.capacity }} personnes<br>
+                        <strong>Prix:</strong> {{ room.price_per_hour }}€/heure
+                    </p>
+                    <button class="btn btn-primary" onclick="openReservationModal({{ room.id }})">
+                        Réserver
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal de Réservation -->
+<div class="modal fade" id="reservationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Faire une Réservation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reservationForm">
+                    <input type="hidden" id="roomId">
+                    <div class="mb-3">
+                        <label for="startTime" class="form-label">Heure de début</label>
+                        <input type="datetime-local" class="form-control" id="startTime" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="endTime" class="form-label">Heure de fin</label>
+                        <input type="datetime-local" class="form-control" id="endTime" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-primary" onclick="submitReservation()">Confirmer la Réservation</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openReservationModal(roomId) {
+    document.getElementById('roomId').value = roomId;
+    const modal = new bootstrap.Modal(document.getElementById('reservationModal'));
+    modal.show();
+}
+
+async function submitReservation() {
+    const roomId = document.getElementById('roomId').value;
+    const startTime = document.getElementById('startTime').value;
+    const endTime = document.getElementById('endTime').value;
+
+    try {
+        const response = await fetch('/rooms/reserve/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                room_id: roomId,
+                start_time: startTime,
+                end_time: endTime
+            })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            alert('Réservation créée avec succès!');
+            location.reload();
+        } else {
+            alert(data.message || 'Erreur lors de la création de la réservation');
+        }
+    } catch (error) {
+        alert('Erreur lors de la création de la réservation');
+    }
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %} 
