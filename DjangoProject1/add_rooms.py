@@ -4,7 +4,6 @@ from django.core.files import File
 from django.conf import settings
 import requests
 from io import BytesIO
-import json
 
 # Set up Django environment
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'DjangoProject1.settings')
@@ -12,72 +11,72 @@ django.setup()
 
 from rooms.models import Room
 
-# Sample room data
+# Sample room data with Moroccan theme
 rooms_data = [
     {
-        'name': 'Salle de Réunion Exécutive',
-        'description': 'Une salle de réunion élégante et moderne, idéale pour les réunions d\'équipe et les présentations. Équipée d\'un grand écran et d\'un système audio de haute qualité.',
-        'capacity': 12,
-        'price_per_hour': 150,
-        'image_url': 'https://images.pexels.com/photos/1181396/pexels-photo-1181396.jpeg',
-        'is_available': True,
-        'amenities': ['Wi-Fi', 'Écran 65"', 'Système audio', 'Table de conférence', 'Café']
-    },
-    {
-        'name': 'Espace de Créativité',
-        'description': 'Un espace lumineux et inspirant, parfait pour les sessions de brainstorming et les ateliers créatifs. Les murs sont équipés de tableaux blancs et d\'espaces d\'affichage.',
-        'capacity': 8,
-        'price_per_hour': 100,
-        'image_url': 'https://images.pexels.com/photos/7679725/pexels-photo-7679725.jpeg',
-        'is_available': True,
-        'amenities': ['Wi-Fi', 'Tableaux blancs', 'Post-it', 'Espace de détente', 'Thé et café']
-    },
-    {
-        'name': 'Salle de Formation',
-        'description': 'Une salle spacieuse conçue pour les sessions de formation et les ateliers. Équipée de tables modulaires et d\'un système de projection professionnel.',
+        'name': 'Salle Atlas',
+        'description': 'Une salle de conférence luxueuse avec une vue imprenable sur la ville. Décoration inspirée de l\'architecture marocaine traditionnelle, idéale pour les réunions d\'affaires importantes. Équipée des dernières technologies et d\'un service de restauration premium.',
         'capacity': 20,
-        'price_per_hour': 200,
-        'image_url': 'https://images.pexels.com/photos/267507/pexels-photo-267507.jpeg',
+        'price_per_hour': 800,
+        'image_url': 'https://images.pexels.com/photos/1181671/pexels-photo-1181671.jpeg',  # Grande salle de conférence luxueuse
         'is_available': True,
-        'amenities': ['Wi-Fi', 'Projecteur', 'Système audio', 'Tables modulaires', 'Climatisation']
+        'amenities': ['Wi-Fi haut débit', 'Écran 75" 4K', 'Système audio premium', 'Table de conférence en bois précieux', 'Service de restauration', 'Climatisation', 'Thé à la menthe', 'Pâtisseries marocaines']
     },
     {
-        'name': 'Cabine de Téléconférence',
-        'description': 'Une cabine insonorisée pour les appels vidéo et les réunions virtuelles. Équipée d\'un écran HD et d\'un système audio de qualité professionnelle.',
-        'capacity': 4,
-        'price_per_hour': 50,
-        'image_url': 'https://images.pexels.com/photos/7679740/pexels-photo-7679740.jpeg',
+        'name': 'Espace Medina',
+        'description': 'Un espace créatif inspiré des riads marocains, avec une cour intérieure et une décoration traditionnelle. Parfait pour les sessions de brainstorming et les ateliers créatifs. L\'ambiance chaleureuse et l\'architecture authentique créent un cadre idéal pour l\'innovation.',
+        'capacity': 12,
+        'price_per_hour': 600,
+        'image_url': 'https://images.pexels.com/photos/1181677/pexels-photo-1181677.jpeg',  # Espace créatif style riad
         'is_available': True,
-        'amenities': ['Wi-Fi', 'Écran HD', 'Caméra HD', 'Microphone', 'Insonorisation']
+        'amenities': ['Wi-Fi', 'Tableaux blancs interactifs', 'Espace de détente', 'Thé à la menthe', 'Pâtisseries marocaines', 'Jardin intérieur', 'Fontaine traditionnelle', 'Climatisation']
     },
     {
-        'name': 'Espace de Collaboration',
-        'description': 'Un espace ouvert et flexible pour le travail collaboratif. Idéal pour les équipes qui ont besoin d\'un espace de travail partagé avec des zones de concentration.',
-        'capacity': 15,
-        'price_per_hour': 120,
-        'image_url': 'https://images.pexels.com/photos/1181435/pexels-photo-1181435.jpeg',
+        'name': 'Salle Hassan II',
+        'description': 'Une salle de réunion moderne avec des touches de design marocain. Équipée des dernières technologies pour les présentations et les réunions virtuelles. L\'acoustique parfaite et l\'éclairage ajustable en font un espace idéal pour les réunions professionnelles.',
+        'capacity': 16,
+        'price_per_hour': 700,
+        'image_url': 'https://images.pexels.com/photos/1181673/pexels-photo-1181673.jpeg',  # Salle de réunion moderne
         'is_available': True,
-        'amenities': ['Wi-Fi', 'Zones de concentration', 'Espace de détente', 'Imprimante', 'Café']
+        'amenities': ['Wi-Fi', 'Écran 65"', 'Système de visioconférence', 'Table de réunion modulaire', 'Climatisation', 'Service de café', 'Éclairage ajustable', 'Insonorisation']
     },
     {
-        'name': 'Salle de Présentation',
-        'description': 'Une salle moderne et professionnelle pour les présentations importantes. Équipée d\'un grand écran 4K et d\'un système audio surround.',
-        'capacity': 30,
-        'price_per_hour': 250,
-        'image_url': 'https://images.pexels.com/photos/416320/pexels-photo-416320.jpeg',
+        'name': 'Cabine Marrakech',
+        'description': 'Un espace de réunion intime avec une décoration authentique marocaine. Idéal pour les réunions confidentielles et les entretiens. L\'ambiance chaleureuse et le confort moderne se marient parfaitement.',
+        'capacity': 6,
+        'price_per_hour': 400,
+        'image_url': 'https://images.pexels.com/photos/1181675/pexels-photo-1181675.jpeg',  # Petite salle de réunion intime
         'is_available': True,
-        'amenities': ['Wi-Fi', 'Écran 4K', 'Système audio surround', 'Scène', 'Climatisation']
+        'amenities': ['Wi-Fi', 'Écran 55"', 'Système audio', 'Table de réunion', 'Climatisation', 'Thé à la menthe', 'Insonorisation', 'Éclairage d\'ambiance']
+    },
+    {
+        'name': 'Espace Casablanca',
+        'description': 'Un centre d\'affaires contemporain avec des influences architecturales marocaines. Espace polyvalent adapté aux réunions d\'équipe et aux événements professionnels. Design moderne et fonctionnel avec une touche marocaine distinctive.',
+        'capacity': 24,
+        'price_per_hour': 900,
+        'image_url': 'https://images.pexels.com/photos/1181679/pexels-photo-1181679.jpeg',  # Centre d'affaires moderne
+        'is_available': True,
+        'amenities': ['Wi-Fi haut débit', 'Écran géant 85"', 'Système audio surround', 'Tables modulaires', 'Climatisation', 'Service de restauration', 'Espace de networking', 'Parking privé']
+    },
+    {
+        'name': 'Salle Rabat',
+        'description': 'Une salle de réunion moderne avec un design épuré et des éléments décoratifs marocains. Parfaite pour les réunions d\'équipe et les présentations. L\'espace est conçu pour favoriser la productivité tout en offrant un cadre agréable.',
+        'capacity': 10,
+        'price_per_hour': 500,
+        'image_url': 'https://images.pexels.com/photos/1181681/pexels-photo-1181681.jpeg',  # Salle de réunion moderne et épurée
+        'is_available': True,
+        'amenities': ['Wi-Fi', 'Écran 60"', 'Système audio', 'Table de réunion', 'Climatisation', 'Service de café', 'Éclairage naturel', 'Vue sur la ville']
     }
 ]
 
 def download_image(url):
     try:
-        response = requests.get(url)
-        response.raise_for_status()  # Raise an exception for bad status codes
-        return BytesIO(response.content)
+        response = requests.get(url, timeout=10)
+        if response.status_code == 200:
+            return BytesIO(response.content)
     except Exception as e:
         print(f"Error downloading image: {e}")
-        return None
+    return None
 
 def add_sample_rooms():
     # Create media directory if it doesn't exist
@@ -97,7 +96,7 @@ def add_sample_rooms():
                 capacity=room_data['capacity'],
                 price_per_hour=room_data['price_per_hour'],
                 is_available=room_data['is_available'],
-                amenities=room_data['amenities']  # Store amenities as a list directly
+                amenities=room_data['amenities']
             )
             
             # Download and save image

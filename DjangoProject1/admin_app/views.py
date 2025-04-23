@@ -25,8 +25,8 @@ def admin_dashboard(request):
     return render(request, 'admin_app/dashboard.html')
 
 def admin_logout(request):
-    logout(request)
-    return redirect('admin_login')
+    from rooms.views import custom_logout
+    return custom_logout(request)
 
 def admin_register(request):
     if request.method == 'POST':
