@@ -9,6 +9,6 @@ class Administrateur(AbstractUser):
     class Meta:
         verbose_name = "Administrateur"
         verbose_name_plural = "Administrateurs"
-    
+
     def __str__(self):
         return self.username 
