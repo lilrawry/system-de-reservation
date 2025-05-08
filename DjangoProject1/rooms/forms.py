@@ -5,6 +5,15 @@ from .models import Reservation, Room, Payment
 from django.utils import timezone
 import datetime
 
+class RoomForm(forms.ModelForm):
+    class Meta:
+        model = Room
+        fields = ['name', 'capacity', 'description', 'price_per_hour', 'is_available', 'image', 'amenities']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4}),
+            'amenities': forms.CheckboxSelectMultiple()
+        }
+
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
 
@@ -46,7 +55,7 @@ class ReservationForm(forms.ModelForm):
         self.fields['room'].queryset = Room.objects.filter(is_available=True)
         self.fields['room'].empty_label = "Sélectionnez une salle"
         
-        # Convert datetime fields to proper format for datetime-local input
+        # Format datetime fields if initial values are provided
         if 'initial' in kwargs and kwargs['initial']:
             if 'start_time' in kwargs['initial']:
                 kwargs['initial']['start_time'] = kwargs['initial']['start_time'].strftime('%Y-%m-%dT%H:%M')

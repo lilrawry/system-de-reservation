@@ -12,10 +12,10 @@
             <i class="fas fa-tachometer-alt me-2"></i>{{ title }}
         </h1>
         <div class="dashboard-actions">
-            <a href="{% url 'admin:index' %}" class="btn btn-outline-primary">
-                <i class="fas fa-cog me-1"></i>Django Admin
+            <a href="{% url 'rooms:manage_rooms' %}" class="btn btn-outline-primary">
+                <i class="fas fa-cog me-1"></i>Gérer les salles
             </a>
-            <a href="{% url 'admin:logout' %}" class="btn btn-outline-danger">
+            <a href="{% url 'rooms:custom_logout' %}" class="btn btn-outline-danger">
                 <i class="fas fa-sign-out-alt me-1"></i>Déconnexion
             </a>
         </div>
@@ -28,7 +28,7 @@
             </div>
             <div>
                 <h5 class="mb-1">Bienvenue, {{ request.user.username }}</h5>
-                <p class="mb-0">Vous êtes connecté en tant qu'administrateur. Gérez les réservations, paiements et comptes utilisateurs.</p>
+                <p class="mb-0">Vous êtes connecté en tant qu'administrateur. Gérez les salles, les utilisateurs et les réservations.</p>
             </div>
         </div>
     </div>
@@ -43,8 +43,8 @@
                     <p class="stat-card-title">Salles</p>
                     <h3 class="stat-card-value">{{ stats.rooms }}</h3>
                     <div class="stat-card-actions">
-                        <a href="{% url 'admin:rooms_room_changelist' %}" class="btn btn-sm btn-primary">Gérer</a>
-                        <a href="{% url 'admin:rooms_room_add' %}" class="btn btn-sm btn-outline-primary">
+                        <a href="{% url 'rooms:manage_rooms' %}" class="btn btn-sm btn-primary">Gérer</a>
+                        <a href="{% url 'rooms:add_room' %}" class="btn btn-sm btn-outline-primary">
                             <i class="fas fa-plus"></i>
                         </a>
                     </div>
@@ -60,8 +60,8 @@
                     <p class="stat-card-title">Réservations</p>
                     <h3 class="stat-card-value">{{ stats.reservations }}</h3>
                     <div class="stat-card-actions">
-                        <a href="{% url 'admin:rooms_reservation_changelist' %}" class="btn btn-sm btn-success">Gérer</a>
-                        <a href="{% url 'admin:rooms_reservation_add' %}" class="btn btn-sm btn-outline-success">
+                        <a href="{% url 'rooms:manage_rooms' %}" class="btn btn-sm btn-primary">Gérer</a>
+                        <a href="{% url 'rooms:add_room' %}" class="btn btn-sm btn-outline-primary">
                             <i class="fas fa-plus"></i>
                         </a>
                     </div>
@@ -77,8 +77,8 @@
                     <p class="stat-card-title">Utilisateurs</p>
                     <h3 class="stat-card-value">{{ stats.users }}</h3>
                     <div class="stat-card-actions">
-                        <a href="{% url 'admin:auth_user_changelist' %}" class="btn btn-sm btn-info">Gérer</a>
-                        <a href="{% url 'admin:auth_user_add' %}" class="btn btn-sm btn-outline-info">
+                        <a href="{% url 'rooms:manage_rooms' %}" class="btn btn-sm btn-primary">Gérer</a>
+                        <a href="{% url 'rooms:add_room' %}" class="btn btn-sm btn-outline-primary">
                             <i class="fas fa-plus"></i>
                         </a>
                     </div>
@@ -94,8 +94,8 @@
                     <p class="stat-card-title">Groupes</p>
                     <h3 class="stat-card-value">{{ stats.groups }}</h3>
                     <div class="stat-card-actions">
-                        <a href="{% url 'admin:auth_group_changelist' %}" class="btn btn-sm btn-warning">Gérer</a>
-                        <a href="{% url 'admin:auth_group_add' %}" class="btn btn-sm btn-outline-warning">
+                        <a href="{% url 'rooms:manage_rooms' %}" class="btn btn-sm btn-primary">Gérer</a>
+                        <a href="{% url 'rooms:add_room' %}" class="btn btn-sm btn-outline-primary">
                             <i class="fas fa-plus"></i>
                         </a>
                     </div>

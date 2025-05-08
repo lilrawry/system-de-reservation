@@ -1,10 +1,11 @@
 from django.urls import path
-from . import views
+from . import views, views_admin, views_user_admin
 
 app_name = 'rooms'
 
 urlpatterns = [
-    path('', views.room_list, name='room_list'),
+    path('', views.home, name='home'),
+    path('rooms/', views.room_list, name='room_list'),
     path('room/<int:pk>/', views.room_detail, name='room_detail'),
     path('reserve/', views.create_reservation, name='create_reservation'),
     path('my-reservations/', views.my_reservations, name='my_reservations'),
@@ -20,4 +21,21 @@ urlpatterns = [
     path('payment/<int:payment_id>/reject/', views.reject_payment, name='reject_payment'),
     path('reservation/<int:reservation_id>/approve/', views.approve_reservation, name='approve_reservation'),
     path('reservation/<int:reservation_id>/reject/', views.reject_reservation, name='reject_reservation'),
+    
+    # Auth URLs
+    path('login/', views.custom_login, name='custom_login'),
+    path('register/', views.register, name='register'),
+    path('logout/', views.custom_logout, name='custom_logout'),
+    
+    # Admin room management URLs
+    path('admin/rooms/', views_admin.manage_rooms, name='manage_rooms'),
+    path('admin/rooms/add/', views_admin.add_room, name='add_room'),
+    path('admin/rooms/<int:pk>/edit/', views_admin.edit_room, name='edit_room'),
+    path('admin/rooms/<int:pk>/delete/', views_admin.delete_room, name='delete_room'),
+    
+    # Admin user management URLs
+    path('admin/users/', views_user_admin.manage_users, name='manage_users'),
+    path('admin/users/add/', views_user_admin.add_user, name='add_user'),
+    path('admin/users/<int:pk>/edit/', views_user_admin.edit_user, name='edit_user'),
+    path('admin/users/<int:pk>/delete/', views_user_admin.delete_user, name='delete_user'),
 ]

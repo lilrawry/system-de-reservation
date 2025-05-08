@@ -14,13 +14,13 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
+from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from rooms.views import register
+from rooms import views as rooms_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,9 +28,9 @@ urlpatterns = [
     path('', RedirectView.as_view(url='/rooms/', permanent=True)),
     
     # Authentication URLs
-    path('login/', auth_views.LoginView.as_view(), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(http_method_names=['get', 'post'], next_page='login'), name='logout'),
-    path('register/', register, name='register'),
+    path('login/', rooms_views.custom_login, name='login'),
+    path('logout/', rooms_views.custom_logout, name='logout'),
+    path('register/', rooms_views.register, name='register'),
     path('password_change/', auth_views.PasswordChangeView.as_view(), name='password_change'),
     path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(), name='password_change_done'),
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),

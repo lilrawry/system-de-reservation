@@ -35,10 +35,6 @@ def calculate_total_price(price_per_hour, start_time, end_time):
 # Configure logging
 logger = logging.getLogger(__name__)
 
-def home(request):
-    # Redirect to room_list view
-    return redirect('rooms:room_list')
-
 def handler500(request, *args, **argv):
     return render(request, '500.html', status=500)
 
