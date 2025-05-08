@@ -19,6 +19,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 import logging
 import string
 import random
+import uuid
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.conf import settings
@@ -161,8 +162,9 @@ def create_reservation(request):
             reservation.status = 'pending'
             
             # Calculate total price
+            from decimal import Decimal
             duration = (reservation.end_time - reservation.start_time).total_seconds() / 3600
-            reservation.total_price = reservation.room.price_per_hour * duration
+            reservation.total_price = reservation.room.price_per_hour * Decimal(str(duration))
             
             reservation.save()
             messages.success(request, 'Réservation effectuée avec succès!')
@@ -231,15 +233,29 @@ def admin_dashboard(request):
     total_rooms = Room.objects.count()
     total_reservations = Reservation.objects.count()
     total_users = User.objects.count()
-    pending_reservations = Reservation.objects.filter(status='pending').count()
+    
+    # Get queryset of pending reservations (not just count)
+    pending_reservations_queryset = Reservation.objects.filter(status='pending').order_by('-created_at')
+    pending_reservations_count = pending_reservations_queryset.count()
+    
     confirmed_reservations = Reservation.objects.filter(status='confirmed').count()
     cancelled_reservations = Reservation.objects.filter(status='cancelled').count()
     
+    # Stats dictionary for display in cards
+    stats = {
+        'rooms': total_rooms,
+        'reservations': total_reservations,
+        'users': total_users,
+        'pending_reservations': pending_reservations_count
+    }
+    
     context = {
+        'stats': stats,
         'total_rooms': total_rooms,
         'total_reservations': total_reservations,
         'total_users': total_users,
-        'pending_reservations': pending_reservations,
+        'pending_reservations': pending_reservations_queryset,  # Pass the queryset, not the count
+        'pending_reservations_count': pending_reservations_count,
         'confirmed_reservations': confirmed_reservations,
         'cancelled_reservations': cancelled_reservations,
         'title': 'Tableau de Bord Admin'
@@ -557,6 +573,9 @@ def process_payment(request, reservation_id):
             # Generate a unique reference number
             payment.reference = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
             
+            # Generate a unique transaction ID using UUID
+            payment.transaction_id = str(uuid.uuid4())
+            
             payment.save()
             
             # Update reservation status
@@ -589,11 +608,14 @@ def approve_payment(request, payment_id):
     # Update reservation status
     reservation = payment.reservation
     reservation.is_paid = True
-    reservation.status = 'confirmed'
+    reservation.status = 'confirmed'  # Keep the traditional 'confirmed' status
     reservation.save()
     
-    messages.success(request, "Paiement approuvé avec succès.")
-    return redirect('rooms:admin_dashboard')
+    # Generate receipt PDF and redirect to display/download
+    messages.success(request, "Paiement approuvé avec succès. Génération du reçu en cours...")
+    
+    # Redirect to the download PDF view with the reservation ID
+    return redirect('rooms:download_pdf', reservation_id=reservation.id)
 
 @login_required
 def reject_payment(request, payment_id):
@@ -615,11 +637,15 @@ def approve_reservation(request, reservation_id):
         return redirect('rooms:room_list')
     
     reservation = get_object_or_404(Reservation, pk=reservation_id)
-    reservation.status = 'confirmed'
+    reservation.status = 'confirmed'  # Keep the traditional 'confirmed' status for consistent UI display
+    reservation.is_paid = True  # Also mark as paid when admin approves
     reservation.save()
     
-    messages.success(request, "Réservation approuvée avec succès.")
-    return redirect('rooms:admin_dashboard')
+    # Generate receipt PDF and redirect to display/download
+    messages.success(request, "Réservation approuvée avec succès. Génération du reçu en cours...")
+    
+    # Redirect to the download PDF view with the reservation ID
+    return redirect('rooms:download_pdf', reservation_id=reservation.id)
 
 @login_required
 def reject_reservation(request, reservation_id):
